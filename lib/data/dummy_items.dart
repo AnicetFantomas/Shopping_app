@@ -1,7 +1,8 @@
-import 'package:shopping_list/models/grocery_item.dart';
-import 'package:shopping_list/data/categories.dart';
+import 'package:shpping_app/data/categories.dart';
+import 'package:shpping_app/models/category.dart';
+import 'package:shpping_app/models/grocery_item.dart';
 
-const groceryItems = [
+final groceryItems = [
   GroceryItem(
       id: 'a',
       name: 'Milk',
@@ -18,3 +19,4 @@ const groceryItems = [
       quantity: 1,
       category: categories[Categories.meat]!),
 ];
+

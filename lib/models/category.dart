@@ -13,8 +13,8 @@ enum Categories {
   other,
 }
 
-class Category {
-  const Category(this.name, this.color);
+class CategoryItem {
+  const CategoryItem(this.name, this.color);
   
   final String name;
   final Color color;
