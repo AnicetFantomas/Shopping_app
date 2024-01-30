@@ -24,7 +24,10 @@ class _NewItemStateState extends State<NewItem> {
               maxLength: 50,
               decoration: const InputDecoration(label: Text('Name')),
               validator: (value) {
-                if (value == null || value.isEmpty) {
+                if (value == null ||
+                    value.isEmpty ||
+                    value.trim().length <= 1 ||
+                    value.trim().length > 50) {
                   return 'Please enter some text';
                 }
                 return null;
@@ -37,6 +40,15 @@ class _NewItemStateState extends State<NewItem> {
                   child: TextFormField(
                     decoration: const InputDecoration(label: Text('Quantity')),
                     initialValue: '1',
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          int.tryParse(value) == null ||
+                          int.tryParse(value)! <= 0) {
+                        return 'Please enter a quantity greater than 0';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(
