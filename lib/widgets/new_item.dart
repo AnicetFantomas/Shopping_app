@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shpping_app/data/categories.dart';
 import 'package:shpping_app/models/category.dart';
-import 'package:shpping_app/models/grocery_item.dart';
+// import 'package:shpping_app/models/grocery_item.dart';
+import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -12,23 +15,34 @@ class NewItem extends StatefulWidget {
 
 class _NewItemStateState extends State<NewItem> {
   final _formKey = GlobalKey<FormState>();
-  var _enteredName  = '';
+  var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
 
-
   void _saveItem() {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final url = Uri.https(
+          'flutter-shopping-8000a-default-rtdb.firebaseio.com',
+          'shopping-list.json');
 
-    _formKey.currentState!.save();
+      http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': _enteredName,
+          'quantity': _enteredQuantity,
+          'category': _selectedCategory.name
+        }),
+      );
 
-    Navigator.of(context).pop(GroceryItem(
-      id: DateTime.now().toString(),
-      name: _enteredName,
-      quantity: _enteredQuantity,
-      category: _selectedCategory,
-    ));
-    };
+      // Navigator.of(context).pop(GroceryItem(
+      //   id: DateTime.now().toString(),
+      //   name: _enteredName,
+      //   quantity: _enteredQuantity,
+      //   category: _selectedCategory,
+      // ));
+    }
   }
 
   @override
@@ -87,26 +101,27 @@ class _NewItemStateState extends State<NewItem> {
                     ),
                     Expanded(
                       child: DropdownButtonFormField(
-                        value: _selectedCategory,
-                        items: [
-                        for (final category in categories.entries)
-                          DropdownMenuItem(
-                            value: category.value,
-                            child: Row(children: [
-                              Container(
-                                width: 16,
-                                height: 16,
-                                color: category.value.color,
+                          value: _selectedCategory,
+                          items: [
+                            for (final category in categories.entries)
+                              DropdownMenuItem(
+                                value: category.value,
+                                child: Row(children: [
+                                  Container(
+                                    width: 16,
+                                    height: 16,
+                                    color: category.value.color,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(category.value.name),
+                                ]),
                               ),
-                              const SizedBox(width: 6),
-                              Text(category.value.name),
-                            ]),
-                          ),
-                      ], onChanged: (value) {
-                        setState(() {
-                          _selectedCategory = value!;
-                        });
-                      }),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategory = value!;
+                            });
+                          }),
                     )
                   ],
                 ),
