@@ -5,6 +5,7 @@ import 'package:shpping_app/data/categories.dart';
 import 'package:shpping_app/models/category.dart';
 // import 'package:shpping_app/models/grocery_item.dart';
 import 'package:http/http.dart' as http;
+import 'package:shpping_app/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -26,7 +27,7 @@ class _NewItemStateState extends State<NewItem> {
           'flutter-shopping-8000a-default-rtdb.firebaseio.com',
           'shopping-list.json');
 
-     final response = await http.post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -36,14 +37,17 @@ class _NewItemStateState extends State<NewItem> {
         }),
       );
 
-      print(response.body);
-      print(response.statusCode);
+      final Map<String, dynamic> resData = json.decode(response.body);
 
       if (!context.mounted) {
         return;
       }
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: resData['name'],
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory));
     }
   }
 
