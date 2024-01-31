@@ -30,6 +30,15 @@ class _GroceryListState extends State<GroceryList> {
 
     final response = await http.get(url);
 
+    // ignore: unrelated_type_equality_checks
+    if (response.statusCode == "null") {
+      setState(() {
+        _isLoading = false;
+      });
+
+      return;
+    }
+
     if (response.statusCode >= 400) {
       setState(() {
         error = 'Failed to fetch data. Please try again later.';
@@ -74,11 +83,24 @@ class _GroceryListState extends State<GroceryList> {
     // _loadItems();
   }
 
-  void _removeItem(GroceryItem item) {
+  void _removeItem(GroceryItem item) async { 
+    final url = Uri.https('flutter-shopping-8000a-default-rtdb.firebaseio.com',
+        'shopping-list/${item.id}.json');
+
+    final response = await http.delete(url);
+    final index = _groceryItems.indexOf(item);
     setState(() {
       _groceryItems.remove(item);
     });
 
+    if (response.statusCode >= 400) {
+      setState(() {
+        _groceryItems.insert(index, item);
+      });
+    }
+
+
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${item.name} removed'),
